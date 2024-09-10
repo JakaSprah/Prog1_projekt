@@ -18,6 +18,7 @@ type msg =
   | PreberiNiz of string
   | ZamenjajVmesnik of stanje_vmesnika
   | VrniVPrvotnoStanje
+  | TrenutnoStanje
 
 let preberi_niz avtomat q niz =
   let aux acc znak =
@@ -44,18 +45,21 @@ let update model = function
         stanje_avtomata = zacetno_stanje model.avtomat;
         stanje_vmesnika = SeznamMoznosti;
       }
+  | TrenutnoStanje -> {model with stanje_vmesnika = RezultatPrebranegaNiza;}
 
 let rec izpisi_moznosti () =
   print_endline "1) izpiši avtomat";
   print_endline "2) beri znake";
   print_endline "3) nastavi na začetno stanje";
+  print_endline "4) trenutno stanje";
   print_string "> ";
   match read_line () with
   | "1" -> ZamenjajVmesnik IzpisAvtomata
   | "2" -> ZamenjajVmesnik BranjeNiza
   | "3" -> VrniVPrvotnoStanje
+  | "4" -> TrenutnoStanje
   | _ ->
-      print_endline "** VNESI 1, 2 ALI 3 **";
+      print_endline "** VNESI 0 ALI 1 **";
       izpisi_moznosti ()
 
 let izpisi_avtomat avtomat =
@@ -64,9 +68,13 @@ let izpisi_avtomat avtomat =
     let prikaz =
       if stanje = zacetno_stanje avtomat then "-> " ^ prikaz else prikaz
     in
-    let prikaz =
-      if je_sprejemno_stanje avtomat stanje then prikaz ^ " +" else prikaz
-    in
+    let izhod = Avtomat.izhodna_funkcija avtomat stanje in
+    let prikaz = prikaz ^ " : " ^ (
+      match izhod with
+        | Some s -> s
+        | None -> "no output"
+        ) 
+      in
     print_endline prikaz
   in
   List.iter izpisi_stanje (seznam_stanj avtomat)
@@ -77,9 +85,14 @@ let beri_niz _model =
   PreberiNiz str
 
 let izpisi_rezultat model =
-  if je_sprejemno_stanje model.avtomat model.stanje_avtomata then
-    print_endline "Niz je bil sprejet"
-  else print_endline "Niz ni bil sprejet"
+  let izhod = Avtomat.izhodna_funkcija model.avtomat model.stanje_avtomata in
+  let prikaz = (
+    match izhod with
+    | Some s -> s
+    | None -> "ni izhoda"
+    ) 
+  in
+  print_endline (prikaz)
 
 let view model =
   match model.stanje_vmesnika with
@@ -92,7 +105,7 @@ let view model =
       izpisi_rezultat model;
       ZamenjajVmesnik SeznamMoznosti
   | OpozoriloONapacnemNizu ->
-      print_endline "Niz ni veljaven";
+      print_endline "Vnos ni veljaven. Avtomat sprejema le števke 0 ali 1";
       ZamenjajVmesnik SeznamMoznosti
 
 let init avtomat =
@@ -107,4 +120,4 @@ let rec loop model =
   let model' = update model msg in
   loop model'
 
-let _ = loop (init enke_1mod3)
+let _ = loop (init logika)
