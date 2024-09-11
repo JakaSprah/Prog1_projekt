@@ -19,7 +19,9 @@ Formalno je Moorov avtomat definiran kot nabor s šestimi elementi $(S, s_0, \Si
 
 ## Primer implementacije
 
-Naš primer Moorovega avtomata analizira nize iz ničel in enic. Vmesnik od uporabnika sprejema po en simbol, ki je bodisi "0", ki predstavlja neresnico (false) ali "1", ki predstavlja resnico (true). Glede na zadnja dva sprejeta simbola se avtomat premika med štirimi možnimi stanji. Če sta zadnja dva sprejeta simbola $i, j$ se bo avtomat nahajal v stanju $s_{ij}$. Izhodna funkcija izvede logično operacijo na nizu ničel in enic dolžine 2. Privzeta operacija je konjukcija oz. logični "in", uporabnik pa lahko operacijo tudi spreminja, kar vpliva na izhodno funkcijo. Tudi izhod je podan z ničlo ali enico.
+Naš primer Moorovega avtomata analizira nize iz ničel in enic. Vmesnik od uporabnika sprejema po en simbol, ki je bodisi "0", ki predstavlja neresnico (false) ali "1", ki predstavlja resnico (true). Glede na sprejeti simbol se avtomat premika med štirimi možnimi stanji, pri čemer upošteva zadnja dva sprejeta simbola. Če sta zadnja dva sprejeta simbola $i, j$ se bo avtomat nahajal v stanju $s_{ij}$. Izhodna funkcija izvede logično operacijo na nizu ničel in enic dolžine 2. Privzeta operacija je konjunkcija oz. logični "in", uporabnik pa lahko operacijo tudi spreminja, kar vpliva na izhodno funkcijo. Logična operacija vpliva samo na izhod, ne pa na prehode med stanji. Tudi izhod je podan z ničlo ali enico, ki prav tako predstavljata logično vrednost resnico ali neresnico.
+
+Elementi nabora so v našem primeri naslednji:
 
 - $S = ${$s_{00}$, $s_{10}$, $s_{01}$, $s_{11}$},
 - $s_0 = s_{00}$,
@@ -34,7 +36,7 @@ Naš primer Moorovega avtomata analizira nize iz ničel in enic. Vmesnik od upor
     | $s_{01}$   | $s_{10}$ | $s_{11}$ | 
     | $s_{11}$   | $s_{10}$ | $s_{11}$ | 
 
-- Funkcijo $G$ določa resničnostna tabela izbrane logične operacije. Stanje s_{10} funkcija na primer interpretira kot nabor $(1, 0)$ oz. $(true, false)$, na teh dveh logičnih vrednostih pa izvede trenutno izbrano logično operacijo. Za operacijo "in" je tabela funkcije G sledeča:
+- Izhodno funkcijo $G$ določa resničnostna tabela izbrane logične operacije. Stanje $s_{10}$ funkcija na primer interpretira kot nabor $(1, 0)$ oz. $(true, false)$, na teh dveh logičnih vrednostih pa izvede trenutno izbrano logično operacijo. Za operacijo "in" je tabela funkcije G sledeča:
 
     | stanje |  $G$  |
     | -------| ----- |
@@ -43,7 +45,7 @@ Naš primer Moorovega avtomata analizira nize iz ničel in enic. Vmesnik od upor
     | $s_{01}$ | $0$ | 
     | $s_{11}$ | $1$ | 
 
-Diagram Moorovega avtomata pri izbrani logični operaciji "in". Krogi označujejo stanja (zgoraj je stanje, spodaj pa pripadajoči izhod), puščice pa prehode med stanji:
+Na sliki je diagram Moorovega avtomata pri izbrani logični operaciji "in". Krogi označujejo stanja (zgoraj je stanje, spodaj pa pripadajoči izhod), puščice pa prehode med stanji.
 
 ![Diagram](diagram_moore1.png)
 
@@ -55,7 +57,7 @@ Avtomat uporabljamo s pomočjo ukazov, ki jih vpisujemo v terminal. Tekstovni vm
 - branje znakov: prebere po en znak, ki mora biti "0" ali "1",
 - ponastavitev avtomata v začetno stanje: ponastavi na stanje $s_{00}$,
 - prikaz trenutnega stanja: prikaže stanje in pripadajoči izhod,
-- izbira binarne logične operacije: omogoča izbiro ene od petih operacij.
+- izbira binarne logične operacije: omogoča izbiro ene od petih operacij (in, ali, ekskluzivni ali, implikacija, ekvivalenca).
 
 Z vpisom pripadajoče številke izberemo ukaz, ki ga želimo izvesti. Glede na izbiro nato sledimo navodilom vmesnika.
 

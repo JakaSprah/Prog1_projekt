@@ -60,6 +60,7 @@ let update model = function
           })
   | ZamenjajVmesnik stanje_vmesnika -> { model with stanje_vmesnika }
   | VrniVPrvotnoStanje ->
+    Printf.printf "Avtomat je ponastavljen.\n";
       {
         model with
         stanje_avtomata = Avtomat.zacetno_stanje model.avtomat;
@@ -117,10 +118,16 @@ let izpisi_avtomat avtomat trenutni_stanje =
   List.iter izpisi_stanje (Avtomat.seznam_stanj avtomat)
 
 
-let beri_niz _model =
-  print_string "Vnesi niz. Dovoljena sta znaka '0', '1'. \n> ";
+let rec beri_niz _model =
+  print_string "Vnesi znak (0 ali 1) > ";
   let str = read_line () in
-  PreberiNiz str
+  if String.length str = 1 && (str = "0" || str = "1") then
+    PreberiNiz str
+  else begin
+    print_endline "Napaka: vneseš lahko le posamezen znak (0 ali 1)!";  
+    beri_niz _model
+  end
+
 
 let izpisi_rezultat model =
   let izhod = Avtomat.izhodna_funkcija model.avtomat model.stanje_avtomata in
@@ -132,21 +139,20 @@ let izpisi_rezultat model =
   in
   print_endline prikaz
 
-  let view model =
-    match model.stanje_vmesnika with
-    | SeznamMoznosti -> 
-        izpisi_moznosti ()
-    | IzpisAvtomata ->
-        izpisi_avtomat model.avtomat model.stanje_avtomata;
-        ZamenjajVmesnik SeznamMoznosti
-    | BranjeNiza -> beri_niz model
-    | RezultatPrebranegaNiza ->
-        izpisi_rezultat model;
-        ZamenjajVmesnik SeznamMoznosti
-    | OpozoriloONapacnemNizu ->
-        print_endline "Niz ni veljaven. Dovoljena sta znaka '0', '1'.";
-        ZamenjajVmesnik SeznamMoznosti
-    | MenjavaOperacije -> IzberiOperacijo (zajemi_operacijo ())
+let view model =
+  match model.stanje_vmesnika with
+  | SeznamMoznosti -> 
+      izpisi_moznosti ()
+  | IzpisAvtomata ->
+      izpisi_avtomat model.avtomat model.stanje_avtomata;
+      ZamenjajVmesnik SeznamMoznosti
+  | BranjeNiza -> beri_niz model
+  | RezultatPrebranegaNiza ->
+      ZamenjajVmesnik SeznamMoznosti
+  | OpozoriloONapacnemNizu ->
+      print_endline "Niz ni veljaven. Dovoljena sta znaka '0', '1'.";
+      ZamenjajVmesnik SeznamMoznosti
+  | MenjavaOperacije -> IzberiOperacijo (zajemi_operacijo ())
   
 
 let init avtomat =
