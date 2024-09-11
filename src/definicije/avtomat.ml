@@ -83,7 +83,7 @@ let izracunaj_izhod stanje =
 
   let izhod_to_string stanje =
     let output = izracunaj_izhod stanje in
-    Printf.printf "Stanje: %s, Izhod: %b\n" (Stanje.v_niz stanje) output;
+    (* Printf.printf "Stanje: %s, Izhod: %b\n" (Stanje.v_niz stanje) output; *)
     if output then "1" else "0" in
   (* Construct the automaton with the correct outputs for each state *)
   prazen_avtomat s00

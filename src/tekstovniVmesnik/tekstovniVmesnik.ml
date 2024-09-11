@@ -26,13 +26,18 @@ type msg =
 let capture_operation () =
   print_endline "Izberite logično operacijo (1: IN, 2: ALI, 3: EKSALI):";
   print_string "> ";
-  match read_line () with
-  | "1" -> In
-  | "2" -> Ali
-  | "3" -> EksAli
-  | _ ->
-      print_endline "Neveljavna izbira, privzeto je IN.";
-      In
+  let operation = match read_line () with
+    | "1" -> In
+    | "2" -> Ali
+    | "3" -> EksAli
+    | _ ->
+        print_endline "Neveljavna izbira, privzeto je IN.";
+        In
+  in
+  Printf.printf "Izbrana operacija: %s\n" 
+    (match operation with In -> "IN" | Ali -> "ALI" | EksAli -> "EKSALI");
+  operation
+
 
 let preberi_niz avtomat q niz =
   let aux acc znak =
@@ -59,13 +64,20 @@ let update model = function
         stanje_avtomata = zacetno_stanje model.avtomat;
         stanje_vmesnika = SeznamMoznosti;
       }
-  | TrenutnoStanje -> { model with stanje_vmesnika = RezultatPrebranegaNiza }
+  | TrenutnoStanje ->
+      let stanje = Stanje.v_niz model.stanje_avtomata in  (* Get the current state's name *)
+      let izhod = Avtomat.izhodna_funkcija model.avtomat model.stanje_avtomata in  (* Get the output *)
+      let izpis_izhoda = match izhod with
+        | Some s -> s
+        | None -> "no output"
+      in
+      Printf.printf "Trenutno stanje: %s : %s\n" stanje izpis_izhoda;  (* Print state and output *)
+      { model with stanje_vmesnika = SeznamMoznosti }
   | IzberiOperacijo operacija ->
-      (* Recreate the automaton with the new selected operation *)
       { 
         model with 
         operacija; 
-        avtomat = logika operacija;  (* Reinitialize the automaton *)
+        avtomat = logika operacija;  (* Reinitialize the automaton with the new operation *)
         stanje_vmesnika = SeznamMoznosti 
       }
 
@@ -80,17 +92,17 @@ let rec izpisi_moznosti () =
   | "1" -> ZamenjajVmesnik IzpisAvtomata
   | "2" -> ZamenjajVmesnik BranjeNiza
   | "3" -> VrniVPrvotnoStanje
-  | "4" -> TrenutnoStanje
+  | "4" -> TrenutnoStanje  (* Display current state and output *)
   | "5" -> ZamenjajVmesnik MenjavaOperacije
   | _ ->
       print_endline "** VNESI 1, 2, 3, 4 ALI 5 **";
       izpisi_moznosti ()
 
-let izpisi_avtomat avtomat =
+let izpisi_avtomat avtomat trenutni_stanje =
   let izpisi_stanje stanje =
     let prikaz = Stanje.v_niz stanje in
     let prikaz =
-      if stanje = zacetno_stanje avtomat then "-> " ^ prikaz else prikaz
+      if stanje = trenutni_stanje then "-> " ^ prikaz else prikaz  (* Mark the current state *)
     in
     let izhod = Avtomat.izhodna_funkcija avtomat stanje in
     let prikaz = prikaz ^ " : " ^ (
@@ -102,6 +114,7 @@ let izpisi_avtomat avtomat =
     print_endline prikaz
   in
   List.iter izpisi_stanje (seznam_stanj avtomat)
+
 
 let beri_niz _model =
   print_string "Vnesi niz > ";
@@ -118,21 +131,22 @@ let izpisi_rezultat model =
   in
   print_endline prikaz
 
-let view model =
-  match model.stanje_vmesnika with
-  | SeznamMoznosti -> 
-      izpisi_moznosti ()
-  | IzpisAvtomata ->
-      izpisi_avtomat model.avtomat;
-      ZamenjajVmesnik SeznamMoznosti
-  | BranjeNiza -> beri_niz model
-  | RezultatPrebranegaNiza ->
-      izpisi_rezultat model;
-      ZamenjajVmesnik SeznamMoznosti
-  | OpozoriloONapacnemNizu ->
-      print_endline "Niz ni veljaven";
-      ZamenjajVmesnik SeznamMoznosti
-  | MenjavaOperacije -> IzberiOperacijo (capture_operation ())
+  let view model =
+    match model.stanje_vmesnika with
+    | SeznamMoznosti -> 
+        izpisi_moznosti ()
+    | IzpisAvtomata ->
+        izpisi_avtomat model.avtomat model.stanje_avtomata;  (* Pass current state *)
+        ZamenjajVmesnik SeznamMoznosti
+    | BranjeNiza -> beri_niz model
+    | RezultatPrebranegaNiza ->
+        izpisi_rezultat model;
+        ZamenjajVmesnik SeznamMoznosti
+    | OpozoriloONapacnemNizu ->
+        print_endline "Niz ni veljaven";
+        ZamenjajVmesnik SeznamMoznosti
+    | MenjavaOperacije -> IzberiOperacijo (capture_operation ())
+  
 
 let init avtomat =
   {
