@@ -7,14 +7,14 @@ type t = {
   izhod : (stanje * string) list
 }
 
-type logicna_operacija = In | Ali | EksAli
+type logicna_operacija = In | Ali | EksAli | Impl | Ekv
 
 let operacija_v_funkcijo = function
-  | In -> (&&)  (* AND *)
-  | Ali -> (||)  (* OR *)
-  | EksAli -> (fun a b -> (a || b) && not (a && b))  (* XOR *)
-
-
+  | In -> (&&)
+  | Ali -> (||)
+  | EksAli -> (fun a b -> (a || b) && not (a && b))
+  | Impl -> (fun a b -> (not a) || b)
+  | Ekv -> (fun a b -> (a && b) || (not a && not b))
 
 let prazen_avtomat zacetno_stanje =
   {
@@ -68,7 +68,7 @@ let logika operacija =
 
   let binarna_op = operacija_v_funkcijo operacija in
 
-  (* Define bool mappings for each state *)
+
 let izracunaj_izhod stanje =
   if stanje == s00 then binarna_op false false
   else if stanje == s01 then binarna_op false true
@@ -78,14 +78,11 @@ let izracunaj_izhod stanje =
 
   in
 
-  (* Convert bool result to string *)
-  (* let izhod_to_string stanje = if izracunaj_izhod stanje then "1" else "0" in *)
-
   let izhod_to_string stanje =
     let output = izracunaj_izhod stanje in
-    (* Printf.printf "Stanje: %s, Izhod: %b\n" (Stanje.v_niz stanje) output; *)
+
     if output then "1" else "0" in
-  (* Construct the automaton with the correct outputs for each state *)
+
   prazen_avtomat s00
   |> dodaj_stanje s01
   |> dodaj_stanje s10

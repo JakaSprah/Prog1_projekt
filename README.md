@@ -19,7 +19,7 @@ Formalno je Moorov avtomat definiran kot nabor s šestimi elementi $(S, s_0, \Si
 
 ## Primer implementacije
 
-Naš primer Moorovega avtomata analizira nize iz ničel in enic. Vmesnik od uporabnika sprejema po en simbol, ki je bodisi "0", ki predstavlja neresnico (false) ali "1", ki predstavlja resnico (true). Glede na zadnja dva sprejeta simbola se avtomat premika med štirimi možnimi stanji. Izhodna funkcija izvede logično operacijo na nizu ničel in enic. Privzeta operacija je konjukcija oz. logični "in", uporabnik pa lahko operacijo tudi spreminja, kar vpliva na izhodno funkcijo. Tudi izhod je podan z ničlo ali enico.
+Naš primer Moorovega avtomata analizira nize iz ničel in enic. Vmesnik od uporabnika sprejema po en simbol, ki je bodisi "0", ki predstavlja neresnico (false) ali "1", ki predstavlja resnico (true). Glede na zadnja dva sprejeta simbola se avtomat premika med štirimi možnimi stanji. Izhodna funkcija izvede logično operacijo na nizu ničel in enic dolžine 2. Privzeta operacija je konjukcija oz. logični "in", uporabnik pa lahko operacijo tudi spreminja, kar vpliva na izhodno funkcijo. Tudi izhod je podan z ničlo ali enico.
 
 - $S = ${$s_{00}$, $s_{10}$, $s_{01}$, $s_{11}$},
 - $s_0 = s_{00}$,
@@ -45,14 +45,14 @@ Naš primer Moorovega avtomata analizira nize iz ničel in enic. Vmesnik od upor
 
 ## Navodila za uporabo
 
-Avtomat uporabljamo s pomočjo ukazov, ki jih vpisujemo v terminal. Tekstovni vmesnik prevedemo z ukazom `dune build`, ki ustvari datoteko `tekstovniVmesnik.exe`. Ukaz `./tekstovniVmesnik.exe.exe` datoteko požene. Med izvajanjem programa sledimo navodilom v terminalu. Na vsakem koraku izvajanja imamo pet možnosti:
-- izpis avtomata,
-- branje znakov,
-- ponastavitev avtomata v začetno stanje,
-- prikaz trenutnega stanja,
-- izbira binarne logične operacije.
+Avtomat uporabljamo s pomočjo ukazov, ki jih vpisujemo v terminal. Tekstovni vmesnik prevedemo z ukazom `dune build`, ki ustvari datoteko `tekstovniVmesnik.exe`. Ukaz `./tekstovniVmesnik.exe` datoteko požene. Med izvajanjem programa sledimo navodilom v terminalu. Na vsakem koraku izvajanja imamo pet možnosti:
+- izpis avtomata: izpiše avtomat z vsemi možnimi stanji in pripadajočimi izhodi, kjer je trenutno stanje označeno s `->`,
+- branje znakov: prebere po en znak, ki mora biti "0" ali "1",
+- ponastavitev avtomata v začetno stanje: ponastavi na stanje $s_{00}$,
+- prikaz trenutnega stanja: prikaže stanje in pripradajoči izhod,
+- izbira binarne logične operacije: omogoča izbiro ene od petih operacij.
 
-Z vpisom pripadajoče številke izberemo ukaz, ki ga želimo izvesti.
+Z vpisom pripadajoče številke izberemo ukaz, ki ga želimo izvesti. Glede na izbiro nato sledimo navodilom vmesnika.
 
 
 ## Struktura datotek

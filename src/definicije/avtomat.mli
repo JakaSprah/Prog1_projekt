@@ -1,5 +1,5 @@
 type stanje = Stanje.t
-type logicna_operacija = In | Ali | EksAli
+type logicna_operacija = In | Ali | EksAli | Impl | Ekv
 
 type t = {
   stanja : stanje list;
