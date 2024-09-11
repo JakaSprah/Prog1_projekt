@@ -23,7 +23,7 @@ Naš primer Moorovega avtomata analizira nize iz ničel in enic. Vmesnik od upor
 
 Elementi nabora so v našem primeri naslednji:
 
-- $S = ${$s_{00}$, $s_{10}$, $s_{01}$, $s_{11}$},
+- $S = ${ $s_{00}$, $s_{10}$, $s_{01}$, $s_{11}$ },
 - $s_0 = s_{00}$,
 - $\Sigma$ = {0, 1},
 - $O$ = {0, 1},
