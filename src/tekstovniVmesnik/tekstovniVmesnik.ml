@@ -1,5 +1,4 @@
 open Definicije
-open Avtomat
 
 type stanje_vmesnika =
   | SeznamMoznosti
@@ -10,10 +9,10 @@ type stanje_vmesnika =
   | MenjavaOperacije
 
 type model = {
-  avtomat : t;
+  avtomat : Avtomat.t;
   stanje_avtomata : Stanje.t;
   stanje_vmesnika : stanje_vmesnika;
-  operacija : logicna_operacija;
+  operacija : Avtomat.logicna_operacija;
 }
 
 type msg =
@@ -21,17 +20,17 @@ type msg =
   | ZamenjajVmesnik of stanje_vmesnika
   | VrniVPrvotnoStanje
   | TrenutnoStanje
-  | IzberiOperacijo of logicna_operacija
+  | IzberiOperacijo of Avtomat.logicna_operacija
 
-let capture_operation () =
-  print_endline "Izberite logično operacijo (1: IN, 2: ALI, 3: EKSKLUZIVNI ALI, 4: IMPLIKACIJA, 5: EKVIVALENCA):";
+let zajemi_operacijo () =
+  print_endline "Izberite logično operacijo z vnosom številke od 1 do 5 (1: IN, 2: ALI, 3: EKSKLUZIVNI ALI, 4: IMPLIKACIJA, 5: EKVIVALENCA):";
   print_string "> ";
   let operation = match read_line () with
-    | "1" -> In
-    | "2" -> Ali
-    | "3" -> EksAli
-    | "4" -> Impl
-    | "5" -> Ekv
+    | "1" -> Avtomat.In
+    | "2" -> Avtomat.Ali
+    | "3" -> Avtomat.EksAli
+    | "4" -> Avtomat.Impl
+    | "5" -> Avtomat.Ekv
     | _ ->
         print_endline "Neveljavna izbira, privzeto je IN.";
         In
@@ -63,7 +62,7 @@ let update model = function
   | VrniVPrvotnoStanje ->
       {
         model with
-        stanje_avtomata = zacetno_stanje model.avtomat;
+        stanje_avtomata = Avtomat.zacetno_stanje model.avtomat;
         stanje_vmesnika = SeznamMoznosti;
       }
   | TrenutnoStanje ->
@@ -79,7 +78,7 @@ let update model = function
       { 
         model with 
         operacija; 
-        avtomat = logika operacija;
+        avtomat = Avtomat.logika operacija;
         stanje_vmesnika = SeznamMoznosti 
       }
 
@@ -115,11 +114,11 @@ let izpisi_avtomat avtomat trenutni_stanje =
     in
     print_endline prikaz
   in
-  List.iter izpisi_stanje (seznam_stanj avtomat)
+  List.iter izpisi_stanje (Avtomat.seznam_stanj avtomat)
 
 
 let beri_niz _model =
-  print_string "Vnesi niz > ";
+  print_string "Vnesi niz. Dovoljena sta znaka '0', '1'. \n> ";
   let str = read_line () in
   PreberiNiz str
 
@@ -145,15 +144,15 @@ let izpisi_rezultat model =
         izpisi_rezultat model;
         ZamenjajVmesnik SeznamMoznosti
     | OpozoriloONapacnemNizu ->
-        print_endline "Niz ni veljaven";
+        print_endline "Niz ni veljaven. Dovoljena sta znaka '0', '1'.";
         ZamenjajVmesnik SeznamMoznosti
-    | MenjavaOperacije -> IzberiOperacijo (capture_operation ())
+    | MenjavaOperacije -> IzberiOperacijo (zajemi_operacijo ())
   
 
 let init avtomat =
   {
     avtomat;
-    stanje_avtomata = zacetno_stanje avtomat;
+    stanje_avtomata = Avtomat.zacetno_stanje avtomat;
     stanje_vmesnika = SeznamMoznosti;
     operacija = Avtomat.In
   }
@@ -163,4 +162,4 @@ let rec loop model =
   let model' = update model msg in
   loop model'
 
-let _ = loop (init (logika Avtomat.In))
+let _ = loop (init (Avtomat.logika Avtomat.In))

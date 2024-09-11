@@ -19,7 +19,7 @@ Formalno je Moorov avtomat definiran kot nabor s šestimi elementi $(S, s_0, \Si
 
 ## Primer implementacije
 
-Naš primer Moorovega avtomata analizira nize iz ničel in enic. Vmesnik od uporabnika sprejema po en simbol, ki je bodisi "0", ki predstavlja neresnico (false) ali "1", ki predstavlja resnico (true). Glede na zadnja dva sprejeta simbola se avtomat premika med štirimi možnimi stanji. Izhodna funkcija izvede logično operacijo na nizu ničel in enic dolžine 2. Privzeta operacija je konjukcija oz. logični "in", uporabnik pa lahko operacijo tudi spreminja, kar vpliva na izhodno funkcijo. Tudi izhod je podan z ničlo ali enico.
+Naš primer Moorovega avtomata analizira nize iz ničel in enic. Vmesnik od uporabnika sprejema po en simbol, ki je bodisi "0", ki predstavlja neresnico (false) ali "1", ki predstavlja resnico (true). Glede na zadnja dva sprejeta simbola se avtomat premika med štirimi možnimi stanji. Če sta zadnja dva sprejeta simbola $i, j$ se bo avtomat nahajal v stanju $s_{ij}$. Izhodna funkcija izvede logično operacijo na nizu ničel in enic dolžine 2. Privzeta operacija je konjukcija oz. logični "in", uporabnik pa lahko operacijo tudi spreminja, kar vpliva na izhodno funkcijo. Tudi izhod je podan z ničlo ali enico.
 
 - $S = ${$s_{00}$, $s_{10}$, $s_{01}$, $s_{11}$},
 - $s_0 = s_{00}$,
@@ -43,13 +43,18 @@ Naš primer Moorovega avtomata analizira nize iz ničel in enic. Vmesnik od upor
     | $s_{01}$ | $0$ | 
     | $s_{11}$ | $1$ | 
 
+Diagram Moorovega avtomata pri izbrani logični operaciji "in". Krogi označujejo stanja (zgoraj je stanje, spodaj pa pripadajoči izhod), puščice pa prehode med stanji:
+
+![Diagram](diagram_moore1.png)
+
+
 ## Navodila za uporabo
 
 Avtomat uporabljamo s pomočjo ukazov, ki jih vpisujemo v terminal. Tekstovni vmesnik prevedemo z ukazom `dune build`, ki ustvari datoteko `tekstovniVmesnik.exe`. Ukaz `./tekstovniVmesnik.exe` datoteko požene. Med izvajanjem programa sledimo navodilom v terminalu. Na vsakem koraku izvajanja imamo pet možnosti:
 - izpis avtomata: izpiše avtomat z vsemi možnimi stanji in pripadajočimi izhodi, kjer je trenutno stanje označeno s `->`,
 - branje znakov: prebere po en znak, ki mora biti "0" ali "1",
 - ponastavitev avtomata v začetno stanje: ponastavi na stanje $s_{00}$,
-- prikaz trenutnega stanja: prikaže stanje in pripradajoči izhod,
+- prikaz trenutnega stanja: prikaže stanje in pripadajoči izhod,
 - izbira binarne logične operacije: omogoča izbiro ene od petih operacij.
 
 Z vpisom pripadajoče številke izberemo ukaz, ki ga želimo izvesti. Glede na izbiro nato sledimo navodilom vmesnika.
@@ -58,67 +63,12 @@ Z vpisom pripadajoče številke izberemo ukaz, ki ga želimo izvesti. Glede na i
 ## Struktura datotek
 
 Projekt je sestavljen iz map `src` in `definicije`, ki vsebujeta naslednje datoteke:
-- `avtomat.ml`: definira strukturo Mealyjevega avtomata,
+- `avtomat.ml`: definira strukturo Moorovega avtomata,
 - `stanje.ml`: definira tip stanja,
 - `tekstovniVmesnik.ml`: vmesnik za analizo dvojiških nizov s pomočjo terminala.
 
+## Viri
+- https://en.wikipedia.org/wiki/Moore_machine
+- https://www.sciencedirect.com/topics/computer-science/moore-machine
+- https://github.com/matijapretnar/programiranje-1/tree/master/projekt
 
-# Končni avtomati
-
-Projekt vsebuje implementacijo končnih avtomatov, enega najpreprostejših računskih modelov, ter njihovo uporabo pri karakterizaciji nizov. Končni avtomat začne v enem izmed možnih stanj, nato pa glede na trenutno stanje in trenutni simbol preide v neko novo stanje. Če ob pregledu celotnega niza konča v enem od sprejemnih stanj, je niz sprejet, sicer pa ni.
-
-Za tekoči primer si oglejmo avtomat, ki sprejema nize, sestavljene iz ničel in enic, v katerih da vsota enic pri deljenju s 3 ostanek 1. Tak avtomat predstavimo z naslednjim diagramom, na katerem je začetno stanje označeno s puščico, sprejemna stanja pa so dvojno obkrožena.
-
-TODO
-
-## Matematična definicija
-
-Končni avtomat je definiran kot nabor $(\Sigma, Q, q_0, F, \delta)$, kjer so:
-
-- $\Sigma$ množica simbolov oz. abeceda,
-- $Q$ množica stanj,
-- $q_0 \in Q$ začetno stanje,
-- $F \subseteq Q$ množica sprejemnih stanj in
-- $\delta : Q \times \Sigma \to Q$ prehodna funkcija.
-
-Na primer, zgornji končni avtomat predstavimo z naborom $(\{0, 1\}, \{q_0, q_1, q_2\}, q_0, \{q_1\}, \delta)$, kjer je $\delta$ podana z naslednjo tabelo:
-
-| $\delta$ | `0`   | `1`   |
-| -------- | ----- | ----- |
-| $q_0$    | $q_0$ | $q_1$ |
-| $q_1$    | $q_2$ | $q_0$ |
-| $q_2$    | $q_1$ | $q_2$ |
-
-## Navodila za uporabo
-
-Ker projekt služi kot osnova za večje projekte, so njegove lastnosti zelo okrnjene. Konkretno implementacija omogoča samo zgoraj omenjeni končni avtomat. Na voljo sta dva vmesnika, tekstovni in grafični. Oba prevedemo z ukazom `dune build`, ki v korenskem imeniku ustvari datoteko `tekstovniVmesnik.exe`, v imeniku `html` pa JavaScript datoteko `spletniVmesnik.bc.js`, ki se izvede, ko v brskalniku odpremo `spletniVmesnik.html`.
-
-Če OCamla nimate nameščenega, lahko še vedno preizkusite tekstovni vmesnik prek ene od spletnih implementacij OCamla, najbolje <http://ocaml.besson.link/>, ki podpira branje s konzole. V tem primeru si na vrh datoteke `tekstovniVmesnik.ml` dodajte še vrstice
-
-```ocaml
-module Avtomat = struct
-    (* celotna vsebina datoteke avtomat.ml *)
-end
-```
-
-### Tekstovni vmesnik
-
-TODO
-
-### Spletni vmesnik
-
-TODO
-
-## Implementacija
-
-### Struktura datotek
-
-TODO
-
-### `avtomat.ml`
-
-TODO
-
-### `model.ml`
-
-TODO

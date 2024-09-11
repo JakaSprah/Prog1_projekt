@@ -68,17 +68,15 @@ let logika operacija =
 
   let binarna_op = operacija_v_funkcijo operacija in
 
+  let izracunaj_izhod stanje =
+    if stanje == s00 then binarna_op false false
+    else if stanje == s01 then binarna_op false true
+    else if stanje == s10 then binarna_op true false
+    else if stanje == s11 then binarna_op true true
+    else false
+    in
 
-let izracunaj_izhod stanje =
-  if stanje == s00 then binarna_op false false
-  else if stanje == s01 then binarna_op false true
-  else if stanje == s10 then binarna_op true false
-  else if stanje == s11 then binarna_op true true
-  else false
-
-  in
-
-  let izhod_to_string stanje =
+  let izhod_v_niz stanje =
     let output = izracunaj_izhod stanje in
 
     if output then "1" else "0" in
@@ -95,12 +93,10 @@ let izracunaj_izhod stanje =
   |> dodaj_prehod s10 '1' s01
   |> dodaj_prehod s11 '0' s10
   |> dodaj_prehod s11 '1' s11
-  |> dodaj_izhod s00 (izhod_to_string s00)
-  |> dodaj_izhod s01 (izhod_to_string s01)
-  |> dodaj_izhod s10 (izhod_to_string s10)
-  |> dodaj_izhod s11 (izhod_to_string s11)
-
-
+  |> dodaj_izhod s00 (izhod_v_niz s00)
+  |> dodaj_izhod s01 (izhod_v_niz s01)
+  |> dodaj_izhod s10 (izhod_v_niz s10)
+  |> dodaj_izhod s11 (izhod_v_niz s11)
 
 
 let preberi_niz avtomat zacetno_stanje niz =
