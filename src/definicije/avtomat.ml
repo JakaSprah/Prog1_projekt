@@ -7,6 +7,15 @@ type t = {
   izhod : (stanje * string) list
 }
 
+type logicna_operacija = In | Ali | EksAli
+
+let operacija_v_funkcijo = function
+  | In -> (&&)  (* AND *)
+  | Ali -> (||)  (* OR *)
+  | EksAli -> (fun a b -> (a || b) && not (a && b))  (* XOR *)
+
+
+
 let prazen_avtomat zacetno_stanje =
   {
     stanja = [ zacetno_stanje ];
@@ -15,8 +24,12 @@ let prazen_avtomat zacetno_stanje =
     izhod = [];
   }
 
-let dodaj_stanje stanje avtomat =
-  { avtomat with stanja = stanje :: avtomat.stanja }
+  let dodaj_stanje stanje avtomat =
+    if List.exists ((=) stanje) avtomat.stanja then
+      avtomat
+    else
+      { avtomat with stanja = stanje :: avtomat.stanja }
+  
 
 let dodaj_prehod stanje1 znak stanje2 avtomat =
   { avtomat with prehodi = (stanje1, znak, stanje2) :: avtomat.prehodi }
@@ -46,13 +59,34 @@ let zacetno_stanje avtomat = avtomat.zacetno_stanje
 let seznam_stanj avtomat = avtomat.stanja
 let seznam_prehodov avtomat = avtomat.prehodi
 let seznam_izhodov avtomat = avtomat.izhod
-let logika =
-  let s00 = Stanje.iz_niza "00"
-  and s01 = Stanje.iz_niza "01"
-  and s10 = Stanje.iz_niza "10"
-  and s11 = Stanje.iz_niza "11" in
+
+let logika operacija =
+  let s00 = Stanje.iz_niza "s00"
+  and s01 = Stanje.iz_niza "s01"
+  and s10 = Stanje.iz_niza "s10"
+  and s11 = Stanje.iz_niza "s11" in
+
+  let binarna_op = operacija_v_funkcijo operacija in
+
+  (* Define bool mappings for each state *)
+let izracunaj_izhod stanje =
+  if stanje == s00 then binarna_op false false
+  else if stanje == s01 then binarna_op false true
+  else if stanje == s10 then binarna_op true false
+  else if stanje == s11 then binarna_op true true
+  else false
+
+  in
+
+  (* Convert bool result to string *)
+  (* let izhod_to_string stanje = if izracunaj_izhod stanje then "1" else "0" in *)
+
+  let izhod_to_string stanje =
+    let output = izracunaj_izhod stanje in
+    Printf.printf "Stanje: %s, Izhod: %b\n" (Stanje.v_niz stanje) output;
+    if output then "1" else "0" in
+  (* Construct the automaton with the correct outputs for each state *)
   prazen_avtomat s00
-  |> dodaj_stanje s00
   |> dodaj_stanje s01
   |> dodaj_stanje s10
   |> dodaj_stanje s11
@@ -64,10 +98,12 @@ let logika =
   |> dodaj_prehod s10 '1' s01
   |> dodaj_prehod s11 '0' s10
   |> dodaj_prehod s11 '1' s11
-  |> dodaj_izhod s00 "0"
-  |> dodaj_izhod s01 "0"
-  |> dodaj_izhod s10 "0"
-  |> dodaj_izhod s11 "1"
+  |> dodaj_izhod s00 (izhod_to_string s00)
+  |> dodaj_izhod s01 (izhod_to_string s01)
+  |> dodaj_izhod s10 (izhod_to_string s10)
+  |> dodaj_izhod s11 (izhod_to_string s11)
+
+
 
 
 let preberi_niz avtomat zacetno_stanje niz =
